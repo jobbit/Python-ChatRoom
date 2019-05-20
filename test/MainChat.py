@@ -8,52 +8,48 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 import GroupOperation
+import time
 
 class Ui_Dialog(object):
+    global ChatNum
     def setupUi(self, Dialog):
-        Dialog.setObjectName("Dialog")
-        Dialog.resize(743, 622)
+        Dialog.setObjectName ( "Dialog" )
+        Dialog.resize ( 743, 622 )
         self.Dialog = Dialog
-        self.listWidget = QtWidgets.QListWidget(Dialog)
-        self.listWidget.setGeometry(QtCore.QRect(60, 40, 111, 361))
-        self.listWidget.setObjectName("listWidget")
-        item = QtWidgets.QListWidgetItem()
-        self.listWidget.addItem(item)
-        item = QtWidgets.QListWidgetItem()
-        self.listWidget.addItem(item)
-        item = QtWidgets.QListWidgetItem()
-        self.listWidget.addItem(item)
-        self.tableView = QtWidgets.QTableView(Dialog)
-        self.tableView.setGeometry(QtCore.QRect(170, 40, 481, 361))
-        self.tableView.setObjectName("tableView")
-        self.toolButton = QtWidgets.QToolButton(Dialog)
-        self.toolButton.setGeometry(QtCore.QRect(60, 400, 111, 131))
-        self.toolButton.setObjectName("toolButton")
-        self.pushButton = QtWidgets.QPushButton(Dialog)
-        self.pushButton.setGeometry(QtCore.QRect(540, 400, 111, 131))
-        self.pushButton.setObjectName("pushButton")
-        self.textEdit = QtWidgets.QTextEdit(Dialog)
-        self.textEdit.setGeometry(QtCore.QRect(170, 400, 371, 131))
-        self.textEdit.setObjectName("textEdit")
-        self.textBrowser = QtWidgets.QTextBrowser(Dialog)
-        self.textBrowser.setGeometry(QtCore.QRect(60, 10, 591, 31))
-        self.textBrowser.setObjectName("textBrowser")
+        self.listWidget = QtWidgets.QListWidget ( Dialog )
+        self.listWidget.setGeometry ( QtCore.QRect ( 60, 40, 111, 361 ) )
+        self.listWidget.setObjectName ( "listWidget" )
+        self.toolButton = QtWidgets.QToolButton ( Dialog )
+        self.toolButton.setGeometry ( QtCore.QRect ( 60, 400, 111, 131 ) )
+        self.toolButton.setObjectName ( "toolButton" )
+        self.pushButton = QtWidgets.QPushButton ( Dialog )
+        self.pushButton.setGeometry ( QtCore.QRect ( 540, 400, 111, 131 ) )
+        self.pushButton.setObjectName ( "pushButton" )
+        self.plainTextEdit = QtWidgets.QPlainTextEdit ( Dialog )
+        self.plainTextEdit.setGeometry ( QtCore.QRect ( 170, 400, 371, 131 ) )
+        self.plainTextEdit.setObjectName ( "plainTextEdit" )
+        self.textBrowser = QtWidgets.QTextBrowser ( Dialog )
+        self.textBrowser.setGeometry ( QtCore.QRect ( 60, 10, 591, 31 ) )
+        self.textBrowser.setObjectName ( "textBrowser" )
+        self.listWidget_2 = QtWidgets.QListWidget ( Dialog )
+        self.listWidget_2.setGeometry ( QtCore.QRect ( 170, 40, 481, 361 ) )
+        self.listWidget_2.setObjectName ( "listWidget_2" )
 
-        self.retranslateUi(Dialog)
-        QtCore.QMetaObject.connectSlotsByName(Dialog)
+        self.retranslateUi ( Dialog )
+        QtCore.QMetaObject.connectSlotsByName ( Dialog )
 
     def retranslateUi(self, Dialog):
         _translate = QtCore.QCoreApplication.translate
         Dialog.setWindowTitle(_translate("Dialog", "Dialog"))
         __sortingEnabled = self.listWidget.isSortingEnabled()
         self.listWidget.setSortingEnabled(False)
-        item = self.listWidget.item(0)
+        '''item = self.listWidget.item(0)
         item.setText(_translate("Dialog", "User1"))
         item = self.listWidget.item(1)
         item.setText(_translate("Dialog", "User2"))
         item = self.listWidget.item(2)
-        item.setText(_translate("Dialog", "User3"))
-        #self.listWidget.itemClicked.connect ( self.jump_to_GroupOperation )
+        item.setText(_translate("Dialog", "User3"))'''
+        self.listWidget.itemClicked.connect ( self.jump_to_GroupOperation )
         self.listWidget.setSortingEnabled(__sortingEnabled)
         self.toolButton.setText(_translate("Dialog", "+"))
         self.toolButton.clicked.connect(self.jump_to_GroupOperation)
@@ -63,6 +59,10 @@ class Ui_Dialog(object):
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:\'SimSun\'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
 "<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">GroupNum</p></body></html>"))
+        self.pushButton.clicked.connect(self.SelfChatLayout)
+        __sortingEnabled = self.listWidget_2.isSortingEnabled ()
+        self.listWidget_2.setSortingEnabled ( False )
+        self.listWidget_2.setSortingEnabled ( __sortingEnabled )
 
     def jump_to_GroupOperation(self):
         self.Dialog.hide()
@@ -73,12 +73,25 @@ class Ui_Dialog(object):
         form1.exec_()
         self.Dialog.show()
 
+    def PrintTime(self):
+        NowTime = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
+        return NowTime
+
+    def FriendLayout(self):
+        self.listWidget.addItem()
+
+    def SelfChatLayout(self):
+        if not len(self.plainTextEdit.toPlainText()) == 0:
+            print(self.plainTextEdit.toPlainText())
+            self.listWidget_2.addItem(self.PrintTime())
+            self.listWidget_2.addItem(self.plainTextEdit.toPlainText())
+
+
     def exit(self):
         self.Dialog.close ()
 
 '''if __name__ == "__main__":
     import sys
-
     app = QtWidgets.QApplication( sys.argv )
     widget = QtWidgets.QWidget()
     ui = Ui_Dialog()
