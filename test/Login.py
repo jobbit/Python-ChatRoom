@@ -79,13 +79,17 @@ class Ui_Dialog(object):
 
         print ( dict_json )
 
+    def getuser(self):
+        print(user)
+        return user
+
     def check(self):
-        self.jump_to_MainChat ()
-        '''self.Token_User()
+        #self.jump_to_MainChat ()
+        self.Token_User()
         if  'id' in user:
             self.jump_to_MainChat()
         else:
-            self.jump_to_LoginError()'''
+            self.jump_to_LoginError()
 
     def jump_to_MainChat(self):
         self.Dialog.close ()

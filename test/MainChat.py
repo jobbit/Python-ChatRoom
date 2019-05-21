@@ -8,7 +8,9 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 import GroupOperation
+import Login
 import time
+import requests
 
 class Ui_Dialog(object):
     global ChatNum
@@ -82,9 +84,25 @@ class Ui_Dialog(object):
 
     def SelfChatLayout(self):
         if not len(self.plainTextEdit.toPlainText()) == 0:
-            print(self.plainTextEdit.toPlainText())
-            self.listWidget_2.addItem(self.PrintTime())
-            self.listWidget_2.addItem(self.plainTextEdit.toPlainText())
+            print ( self.plainTextEdit.toPlainText () )
+            self.listWidget_2.addItem ( self.PrintTime () )
+            self.listWidget_2.addItem ( self.plainTextEdit.toPlainText () )
+            self.SendMessage()
+
+    def SendMessage(self):
+        url = 'http://www.lunareclipse.net.cn:8000'
+        api = '/api/message/send'
+        content = self.plainTextEdit.toPlainText()
+        created_at = self.PrintTime()
+        id_user = self.get_userid()
+        print(id)
+        data = {'content': content, "created_at": created_at, "id_user": id_user,}
+        r = requests.post ( url + api, json=data )
+        print ( r.json () )
+
+    def get_userid(self):
+        print(Login.Ui_Dialog.getuser)
+        return 'id' in Login.Ui_Dialog.getuser
 
 
     def exit(self):
