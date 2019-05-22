@@ -10,11 +10,15 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 import MainChat
 import LoginError
 import Register
+import GroupLayout
+
 import sys
 import requests
 import json
 
 class Ui_Dialog(object):
+
+
     def setupUi(self, Dialog):
         Dialog.setObjectName("Di+alog")
         Dialog.resize(394, 258)
@@ -58,6 +62,10 @@ class Ui_Dialog(object):
         self.checkBox.setText(_translate("Dialog", "记住用户名和密码"))
 
     def Token_User(self):
+        global hed
+        global token
+        global auth_token
+        global url
         url = 'http://www.lunareclipse.net.cn:8000'
         api = '/api/token'
         email = self.lineEdit.text ()
@@ -72,22 +80,24 @@ class Ui_Dialog(object):
 
         print ( hed )
         r = requests.get ( url + api, headers=hed )
-        json_response = r.content.decode ()
-        dict_json = json.loads ( json_response )
-        global user
-        user = dict_json
 
-        print ( dict_json )
+        token = r.json()
+        print(token)
 
-    def getuser(self):
-        print(user)
-        return user
+        api = '/api/user/6'
+        print ( auth_token )
+
+        print ( hed )
+        r = requests.get ( url + api, headers=hed )
+        print ( "获取用户信息" )
+        print ( r.json () )
 
     def check(self):
-        #self.jump_to_MainChat ()
+        self.jump_to_GroupLayout ()
+
         self.Token_User()
-        if  'id' in user:
-            self.jump_to_MainChat()
+        if  'id' in token:
+            self.jump_to_GroupLayout()
         else:
             self.jump_to_LoginError()
 
@@ -116,6 +126,15 @@ class Ui_Dialog(object):
         self.Dialog.hide ()
         form1 = QtWidgets.QDialog()
         ui = LoginError.Ui_Dialog()
+        ui.setupUi(form1)
+        form1.show()
+        form1.exec_()
+        self.Dialog.close ()
+
+    def jump_to_GroupLayout(self):
+        self.Dialog.close ()
+        form1 = QtWidgets.QDialog()
+        ui = GroupLayout.Ui_Dialog()
         ui.setupUi(form1)
         form1.show()
         form1.exec_()

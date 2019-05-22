@@ -8,12 +8,14 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 import GroupOperation
-import Login
+import GroupLayout
 import time
 import requests
 
 class Ui_Dialog(object):
-    global ChatNum
+    global token
+    global group_id
+    group_id = 'None'
     def setupUi(self, Dialog):
         Dialog.setObjectName ( "Dialog" )
         Dialog.resize ( 743, 622 )
@@ -60,7 +62,7 @@ class Ui_Dialog(object):
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:\'SimSun\'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
-"<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">GroupNum</p></body></html>"))
+"<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">"+group_id+"</p></body></html>"))
         self.pushButton.clicked.connect(self.SelfChatLayout)
         __sortingEnabled = self.listWidget_2.isSortingEnabled ()
         self.listWidget_2.setSortingEnabled ( False )
@@ -74,6 +76,16 @@ class Ui_Dialog(object):
         form1.show()
         form1.exec_()
         self.Dialog.show()
+
+    def jump_to_GroupLayout(self):
+        self.Dialog.hide()
+        form1 = QtWidgets.QDialog()
+        ui = GroupLayout.Ui_Dialog()
+        ui.setupUi(form1)
+        form1.show()
+        form1.exec_()
+        self.Dialog.show()
+
 
     def PrintTime(self):
         NowTime = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
@@ -89,30 +101,41 @@ class Ui_Dialog(object):
             self.listWidget_2.addItem ( self.plainTextEdit.toPlainText () )
             self.SendMessage()
 
-    def SendMessage(self):
-        url = 'http://www.lunareclipse.net.cn:8000'
-        api = '/api/message/send'
-        content = self.plainTextEdit.toPlainText()
-        created_at = self.PrintTime()
-        id_user = self.get_userid()
-        print(id)
-        data = {'content': content, "created_at": created_at, "id_user": id_user,}
-        r = requests.post ( url + api, json=data )
+    def SelfGroupLayout(self):
+        api = '/api/group'
+        group_id = 1
+        page = 1
+        per_page = 10
+        data = {'group_id': group_id, 'page': page, 'per_page': per_page}
+
+        r = requests.post ( url + api, json=data, headers=hed )
+        print ( "获取指定分组包括组员的群组信息" )
         print ( r.json () )
 
-    def get_userid(self):
-        print(Login.Ui_Dialog.getuser)
-        return 'id' in Login.Ui_Dialog.getuser
+    def SendMessage(self):
+        global hed
+        global token
+        global auth_token
+        global url
+
+        api = '/api/message/send'
+        content = self.plainTextEdit.toPlainText ()
+        data = {'group_id': group_id, 'content': content}
+        r = requests.post ( url + api, json=data, headers=hed )
+        print ( "发送消息" )
+        print ( r.json () )
+
+
 
 
     def exit(self):
         self.Dialog.close ()
 
-'''if __name__ == "__main__":
+if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication( sys.argv )
     widget = QtWidgets.QWidget()
     ui = Ui_Dialog()
     ui.setupUi( widget )
     widget.show()
-    sys.exit( app.exec_ () )'''
+    sys.exit( app.exec_ () )
