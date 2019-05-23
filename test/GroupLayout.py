@@ -9,10 +9,16 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 import GroupOperation
 
+import gol
+
 import sys
 import MainChat
+import Login
 
 class Ui_Dialog(object):
+
+
+    #groups = Login.Ui_Dialog.groups
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
         Dialog.resize(140, 630)
@@ -27,12 +33,6 @@ class Ui_Dialog(object):
         self.listWidget = QtWidgets.QListWidget(Dialog)
         self.listWidget.setGeometry(QtCore.QRect(0, 0, 141, 501))
         self.listWidget.setObjectName("listWidget")
-        item = QtWidgets.QListWidgetItem()
-        self.listWidget.addItem(item)
-        item = QtWidgets.QListWidgetItem()
-        self.listWidget.addItem(item)
-        item = QtWidgets.QListWidgetItem()
-        self.listWidget.addItem(item)
 
         self.retranslateUi(Dialog)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
@@ -44,12 +44,7 @@ class Ui_Dialog(object):
         self.pushButton.clicked.connect(self.jump_to_GroupOperation)
         __sortingEnabled = self.listWidget.isSortingEnabled()
         self.listWidget.setSortingEnabled(False)
-        item = self.listWidget.item(0)
-        item.setText(_translate("Dialog", "New Item"))
-        item = self.listWidget.item(1)
-        item.setText(_translate("Dialog", "New Item"))
-        item = self.listWidget.item(2)
-        item.setText(_translate("Dialog", "New Item"))
+        self.GroupsLayout()
         self.listWidget.itemClicked.connect ( self.jump_to_MainChat)
         self.listWidget.setSortingEnabled(__sortingEnabled)
 
@@ -70,6 +65,17 @@ class Ui_Dialog(object):
         form1.show()
         form1.exec_()
         self.Dialog.close ()
+
+    def GroupsLayout(self):
+
+        global GroupName
+        global groups
+        groups = gol.get_value('groups')
+        for line in groups:
+            if not line['group_name'] == None:
+                GroupName = line['group_name']
+                self.listWidget.addItem ( GroupName )
+
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication( sys.argv )

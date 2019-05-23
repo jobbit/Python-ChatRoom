@@ -42,6 +42,14 @@ r = requests.put(url+api,json=data,headers=hed)
 print("修改用户信息")
 print(r.json())
 
+
+# 获取用户群组信息
+api = '/api/groups'
+r = requests.get(url+api,headers=hed)
+print("获取用户群组信息")
+print(r.text)
+print(r.json())
+
 # 获取单个群组信息
 api = '/api/group/1'
 

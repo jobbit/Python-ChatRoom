@@ -12,12 +12,14 @@ import LoginError
 import Register
 import GroupLayout
 
+import gol
+
 import sys
 import requests
 import json
 
-class Ui_Dialog(object):
 
+class Ui_Dialog(object):
 
     def setupUi(self, Dialog):
         Dialog.setObjectName("Di+alog")
@@ -66,7 +68,11 @@ class Ui_Dialog(object):
         global token
         global auth_token
         global url
+        global groups
+
         url = 'http://www.lunareclipse.net.cn:8000'
+
+        # token
         api = '/api/token'
         email = self.lineEdit.text ()
         password = self.lineEdit_2.text ()
@@ -74,28 +80,31 @@ class Ui_Dialog(object):
 
         auth_token = r.json ()['token']
         hed = {'Authorization': 'Bearer ' + auth_token}
+
         # 获取用户信息
-        api = '/api/user/1'
-        print ( auth_token )
-
-        print ( hed )
-        r = requests.get ( url + api, headers=hed )
-
-        token = r.json()
-        print(token)
-
         api = '/api/user/6'
         print ( auth_token )
-
         print ( hed )
         r = requests.get ( url + api, headers=hed )
+        token = r.json()
         print ( "获取用户信息" )
-        print ( r.json () )
+        print ( token )
+
+        # 获取用户群组信息
+        api = '/api/groups'
+        r = requests.get ( url + api, headers=hed )
+        groups = r.json()
+        gol.set_value('groups',groups)
+        print ( "获取用户群组信息" )
+        print ( r.text )
+        print ( groups )
 
     def check(self):
-        self.jump_to_GroupLayout ()
+        #self.jump_to_GroupLayout ()
 
         self.Token_User()
+        global token
+        print(token)
         if  'id' in token:
             self.jump_to_GroupLayout()
         else:
@@ -145,6 +154,7 @@ class Ui_Dialog(object):
 
 
 if __name__ == "__main__":
+    gol._init()
     app = QtWidgets.QApplication( sys.argv )
     widget = QtWidgets.QWidget()
     window = Ui_Dialog()
