@@ -15,7 +15,7 @@ class Ui_Dialog(object):
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
         Dialog.resize(400, 300)
-        self.dialog = Dialog
+        self.Dialog = Dialog
         self.pushButton_Create_Group = QtWidgets.QPushButton(Dialog)
         self.pushButton_Create_Group.setGeometry(QtCore.QRect(20, 40, 161, 101))
         self.pushButton_Create_Group.setObjectName("pushButton_Create_Group")
@@ -37,33 +37,33 @@ class Ui_Dialog(object):
         self.pushButton_Join_Group.setText(_translate("Dialog", "加入群聊"))
         self.pushButton_Join_Group.clicked.connect(self.jump_to_JoinGroup )
         self.pushButton.setText(_translate("Dialog", "取消"))
-        self.pushButton.clicked.connect(self.jump_to_MainChat)
+        self.pushButton.clicked.connect(self.Dialog.close)
 
     def jump_to_CreateGroup(self):
-        self.dialog.close()
+        self.Dialog.close()
         form1 = QtWidgets.QDialog()
         ui = CreateGroup.Ui_Dialog()
         ui.setupUi(form1)
         form1.show()
         form1.exec_()
-        self.dialog.show()
+        self.Dialog.show()
 
     def jump_to_JoinGroup(self):
-        self.dialog.close()
+        self.Dialog.close()
         form2 = QtWidgets.QDialog()
         ui = JoinGroup.Ui_Dialog()
         ui.setupUi(form2)
         form2.show()
         form2.exec_()
-        self.dialog.show()
+        self.Dialog.show()
 
     def jump_to_MainChat(self):
-        self.dialog.close()
+        self.Dialog.close()
         form1 = QtWidgets.QDialog()
         ui = MainChat.Ui_Dialog()
         ui.setupUi(form1)
         form1.show()
         form1.exec_()
-        self.dialog.show()
+        self.Dialog.show()
 
 
