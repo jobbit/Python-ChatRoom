@@ -71,7 +71,7 @@ class Ui_Dialog(object):
         global groups
 
         url = 'http://www.lunareclipse.net.cn:8000'
-
+        gol.set_value('url',url)
         # token
         api = '/api/token'
         email = self.lineEdit.text ()
@@ -80,6 +80,7 @@ class Ui_Dialog(object):
 
         auth_token = r.json ()['token']
         hed = {'Authorization': 'Bearer ' + auth_token}
+        gol.set_value('hed',hed)
 
         # 获取用户信息
         api = '/api/user/6'

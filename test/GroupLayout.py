@@ -70,12 +70,15 @@ class Ui_Dialog(object):
 
         global GroupName
         global groups
+        global GroupId
         groups = gol.get_value('groups')
         for line in groups:
             if not line['group_name'] == None:
                 GroupName = line['group_name']
                 self.listWidget.addItem ( GroupName )
-
+        #GroupId = id in groups
+        gol.set_value ( 'GroupName', GroupName )
+        #gol.set_value('GroupId',GroupId)
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication( sys.argv )

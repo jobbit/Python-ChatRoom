@@ -11,11 +11,10 @@ import GroupOperation
 import GroupLayout
 import time
 import requests
+import gol
 
 class Ui_Dialog(object):
     global token
-    global group_id
-    group_id = 'None'
     def setupUi(self, Dialog):
         Dialog.setObjectName ( "Dialog" )
         Dialog.resize ( 743, 622 )
@@ -47,22 +46,21 @@ class Ui_Dialog(object):
         Dialog.setWindowTitle(_translate("Dialog", "Dialog"))
         __sortingEnabled = self.listWidget.isSortingEnabled()
         self.listWidget.setSortingEnabled(False)
-        '''item = self.listWidget.item(0)
-        item.setText(_translate("Dialog", "User1"))
-        item = self.listWidget.item(1)
-        item.setText(_translate("Dialog", "User2"))
-        item = self.listWidget.item(2)
-        item.setText(_translate("Dialog", "User3"))'''
         self.listWidget.itemClicked.connect ( self.jump_to_GroupOperation )
         self.listWidget.setSortingEnabled(__sortingEnabled)
         self.toolButton.setText(_translate("Dialog", "+"))
         self.toolButton.clicked.connect(self.jump_to_GroupOperation)
         self.pushButton.setText(_translate("Dialog", "send"))
+        self.SelfGroupLayout()
+        global group_name
+        #group_name = 'test'
+        group_name = gol.get_value ( 'GroupName' )
+        print ( group_name )
         self.textBrowser.setHtml(_translate("Dialog", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:\'SimSun\'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
-"<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">"+group_id+"</p></body></html>"))
+"<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">"+group_name+"</p></body></html>"))
         self.pushButton.clicked.connect(self.SelfChatLayout)
         __sortingEnabled = self.listWidget_2.isSortingEnabled ()
         self.listWidget_2.setSortingEnabled ( False )
@@ -102,8 +100,11 @@ class Ui_Dialog(object):
             self.SendMessage()
 
     def SelfGroupLayout(self):
+        global url
+        url = gol.get_value('url')
         api = '/api/group'
-        group_id = 1
+        group_id = gol.get_value('GroupId')
+        print(group_id)
         page = 1
         per_page = 10
         data = {'group_id': group_id, 'page': page, 'per_page': per_page}
@@ -112,21 +113,26 @@ class Ui_Dialog(object):
         print ( "获取指定分组包括组员的群组信息" )
         print ( r.json () )
 
+        global GroupPage
+        GroupPage = r.json()
+        if not 'items' in GroupPage == None:
+            for items in GroupPage:
+                GroupMemberName = items['nickname']
+                self.listWidget2.addItem ( GroupMemberName )
+
     def SendMessage(self):
         global hed
         global token
         global auth_token
         global url
-
+        global group_id
+        hed = gol.get_value('hed')
         api = '/api/message/send'
         content = self.plainTextEdit.toPlainText ()
         data = {'group_id': group_id, 'content': content}
         r = requests.post ( url + api, json=data, headers=hed )
         print ( "发送消息" )
         print ( r.json () )
-
-
-
 
     def exit(self):
         self.Dialog.close ()

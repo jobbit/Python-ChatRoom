@@ -12,7 +12,7 @@ import requests
 import RegisterError
 import operator
 import sys
-import json
+import gol
 
 class Ui_Dialog(object):
     def setupUi(self, Dialog):
@@ -95,7 +95,7 @@ class Ui_Dialog(object):
         self.Dialog.show()
 
     def Register_User(self):
-        url = 'http://www.lunareclipse.net.cn:8000'
+        url = gol.get_value('url')
         api = '/api/user'
         email = self.lineEdit.text()
         password = self.lineEdit_2.text()

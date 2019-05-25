@@ -8,6 +8,8 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 import MainChat
+import gol
+import requests
 
 class Ui_Dialog(object):
     def setupUi(self, Dialog):
@@ -39,8 +41,6 @@ class Ui_Dialog(object):
         self.pushButton_2.clicked.connect ( self.jump_to_MainChat )
 
     def jump_to_MainChat(self):
-        GroupNum = self.lineEdit.text ()
-        print(GroupNum)
         self.dialog.close()
         form1 = QtWidgets.QDialog()
         ui = MainChat.Ui_Dialog()
@@ -49,3 +49,18 @@ class Ui_Dialog(object):
         form1.exec_()
         self.dialog.show()
 
+    def JoinGroup(self):
+        global group_name
+        url = gol.get_value('url')
+        hed = gol.get_value('hed')
+        api = '/api/group/join'
+        group_id = self.lineEdit.text ()
+        page = 1
+        per_page = 10
+        data = {'group_id': group_id}
+        r = requests.post ( url + api, json=data, headers=hed )
+        print ( "加入群组" )
+        print ( r.json () )
+        group_name = group_name in r.json()
+        print(group_name)
+        gol.set_value ( 'GroupName', group_name )
