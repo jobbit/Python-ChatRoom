@@ -124,9 +124,11 @@ print(r.json())
 
 
 # 获取指定群聊详细信息
-
+group_id = 5
 api = '/api/message/group'
-data={'group_id':group_id}
+page = 1
+per_page=10
+data={'group_id':group_id,'page':1,'per_page':10}
 r = requests.post(url+api,json=data,headers=hed)
 print("获取指定群聊详细信息")
 

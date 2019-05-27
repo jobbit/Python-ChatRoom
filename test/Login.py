@@ -124,7 +124,7 @@ class Ui_Dialog(object):
         self.Dialog.close ()
 
     def jump_to_Register(self):
-        self.Dialog.hide()
+        self.Dialog.close()
         form1 = QtWidgets.QDialog()
         ui = Register.Ui_Dialog()
         ui.setupUi(form1)
@@ -133,7 +133,7 @@ class Ui_Dialog(object):
         self.Dialog.show()
 
     def jump_to_LoginError(self):
-        self.Dialog.hide ()
+        self.Dialog.close ()
         form1 = QtWidgets.QDialog()
         ui = LoginError.Ui_Dialog()
         ui.setupUi(form1)

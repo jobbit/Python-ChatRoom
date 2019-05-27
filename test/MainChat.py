@@ -5,8 +5,11 @@
 # Created by: PyQt5 UI code generator 5.11.3
 #
 # WARNING! All changes made in this file will be lost!
+import threading
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtWidgets import QApplication
+
 import GroupOperation
 import GroupLayout
 import time
@@ -32,7 +35,7 @@ class Ui_Dialog(object):
         self.plainTextEdit.setGeometry ( QtCore.QRect ( 170, 400, 371, 131 ) )
         self.plainTextEdit.setObjectName ( "plainTextEdit" )
         self.textBrowser = QtWidgets.QTextBrowser ( Dialog )
-        self.textBrowser.setGeometry ( QtCore.QRect ( 60, 10, 591, 31 ) )
+        self.textBrowser.setGeometry ( QtCore.QRect ( 60, 0, 591, 40 ) )
         self.textBrowser.setObjectName ( "textBrowser" )
         self.listWidget_2 = QtWidgets.QListWidget ( Dialog )
         self.listWidget_2.setGeometry ( QtCore.QRect ( 170, 40, 481, 361 ) )
@@ -52,22 +55,23 @@ class Ui_Dialog(object):
         self.toolButton.clicked.connect(self.jump_to_GroupOperation)
         self.pushButton.setText(_translate("Dialog", "send"))
         self.SelfGroupLayout()
-        global group_name
-        #group_name = 'test'
         group_name = gol.get_value ( 'GroupName' )
+        group_id = gol.get_value('GroupId')
         print ( group_name )
         self.textBrowser.setHtml(_translate("Dialog", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:\'SimSun\'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
-"<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">"+group_name+"</p></body></html>"))
-        self.pushButton.clicked.connect(self.SelfChatLayout)
+"<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">"+group_name+"<br/>"+group_id+"</p></body></html>"))
+        self.pushButton.clicked.connect(self.SelfChatSend)
         __sortingEnabled = self.listWidget_2.isSortingEnabled ()
         self.listWidget_2.setSortingEnabled ( False )
         self.listWidget_2.setSortingEnabled ( __sortingEnabled )
+        t = threading.Thread(target=self.ReceiveMessage())
+        t.start()
 
     def jump_to_GroupOperation(self):
-        self.Dialog.hide()
+        self.Dialog.close()
         form1 = QtWidgets.QDialog()
         ui = GroupOperation.Ui_Dialog()
         ui.setupUi(form1)
@@ -76,7 +80,7 @@ class Ui_Dialog(object):
         self.Dialog.show()
 
     def jump_to_GroupLayout(self):
-        self.Dialog.hide()
+        self.Dialog.close()
         form1 = QtWidgets.QDialog()
         ui = GroupLayout.Ui_Dialog()
         ui.setupUi(form1)
@@ -89,10 +93,9 @@ class Ui_Dialog(object):
         NowTime = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
         return NowTime
 
-    def FriendLayout(self):
-        self.listWidget.addItem()
 
-    def SelfChatLayout(self):
+    def SelfChatSend(self):
+        print('进SelfSend')
         if not len(self.plainTextEdit.toPlainText()) == 0:
             print ( self.plainTextEdit.toPlainText () )
             self.listWidget_2.addItem ( self.PrintTime () )
@@ -101,7 +104,10 @@ class Ui_Dialog(object):
 
     def SelfGroupLayout(self):
         global url
+        global hed
+        global group_id
         url = gol.get_value('url')
+        hed = gol.get_value('hed')
         api = '/api/group'
         group_id = gol.get_value('GroupId')
         print(group_id)
@@ -116,9 +122,13 @@ class Ui_Dialog(object):
         global GroupPage
         GroupPage = r.json()
         if not 'items' in GroupPage == None:
-            for items in GroupPage:
-                GroupMemberName = items['nickname']
-                self.listWidget2.addItem ( GroupMemberName )
+            member = GroupPage['items']
+            print('群成员为',member)
+            for line in member:
+                if not line['nickname'] == None:
+                    GroupMemberName = line['nickname']
+                    print('群成员具体nickname为',GroupMemberName)
+                    self.listWidget.addItem ( GroupMemberName )
 
     def SendMessage(self):
         global hed
@@ -126,6 +136,8 @@ class Ui_Dialog(object):
         global auth_token
         global url
         global group_id
+        group_id = gol.get_value('GroupId')
+        url = gol.get_value('url')
         hed = gol.get_value('hed')
         api = '/api/message/send'
         content = self.plainTextEdit.toPlainText ()
@@ -134,10 +146,34 @@ class Ui_Dialog(object):
         print ( "发送消息" )
         print ( r.json () )
 
+    def ReceiveMessage(self):
+        global group_id
+        global url
+        global hed
+        print('进ReceiveMessage')
+        api = '/api/message/group'
+        data = {'group_id': group_id}
+        r = requests.post ( url + api, json=data, headers=hed )
+        print ( "获取指定群聊详细信息" )
+        print ( r.json () )
+        content = r.json()
+        if not 'items' in content == None:
+            contentitem = content['items']
+            print('聊天item为',contentitem)
+            for line in contentitem:
+                if not line['content'] == None:
+                    ReceiveMC = str(line['sender']['nickname'])+':'+str(line['content'])
+                    print(ReceiveMC)
+                    ReceiveT = str(line['created_at'])
+                    print(ReceiveT)
+                    self.listWidget_2.addItem ( ReceiveT )
+                    self.listWidget_2.addItem ( ReceiveMC )
+
     def exit(self):
         self.Dialog.close ()
 
 if __name__ == "__main__":
+    gol._init()
     import sys
     app = QtWidgets.QApplication( sys.argv )
     widget = QtWidgets.QWidget()

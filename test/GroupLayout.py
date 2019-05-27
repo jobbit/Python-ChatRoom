@@ -7,6 +7,7 @@
 # WARNING! All changes made in this file will be lost!
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtWidgets import QAbstractItemView
 import GroupOperation
 
 import gol
@@ -17,8 +18,6 @@ import Login
 
 class Ui_Dialog(object):
 
-
-    #groups = Login.Ui_Dialog.groups
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
         Dialog.resize(140, 630)
@@ -49,7 +48,7 @@ class Ui_Dialog(object):
         self.listWidget.setSortingEnabled(__sortingEnabled)
 
     def jump_to_GroupOperation(self):
-        self.Dialog.hide()
+        self.Dialog.close()
         form1 = QtWidgets.QDialog()
         ui = GroupOperation.Ui_Dialog()
         ui.setupUi(form1)
@@ -58,6 +57,18 @@ class Ui_Dialog(object):
         self.Dialog.show()
 
     def jump_to_MainChat(self):
+        global groups
+        self.listWidget.setSelectionMode(QAbstractItemView.ExtendedSelection)
+        www = self.listWidget.selectedItems()
+        print(www)
+        text = [i.text() for i in list(www)]
+        splitlist = text[0].split('_')
+        selectname = splitlist[0]
+        GroupId = splitlist[1]
+        gol.set_value('GroupId',GroupId)
+        print(selectname)
+        gol.set_value ( 'GroupName', selectname )
+        i = 0
         self.Dialog.close ()
         form1 = QtWidgets.QDialog()
         ui = MainChat.Ui_Dialog()
@@ -72,13 +83,12 @@ class Ui_Dialog(object):
         global groups
         global GroupId
         groups = gol.get_value('groups')
+
         for line in groups:
             if not line['group_name'] == None:
-                GroupName = line['group_name']
-                self.listWidget.addItem ( GroupName )
-        #GroupId = id in groups
-        gol.set_value ( 'GroupName', GroupName )
-        #gol.set_value('GroupId',GroupId)
+                GroupName = line['group_name']+'_'+str(line['id'])
+                print(GroupName)
+                self.listWidget.addItem(GroupName)
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication( sys.argv )

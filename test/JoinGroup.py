@@ -38,7 +38,7 @@ class Ui_Dialog(object):
         self.label.setText(_translate("Dialog", "加入群聊"))
         self.label_2.setText(_translate("Dialog", "群号码："))
         self.pushButton_2.setText(_translate("Dialog", "ok"))
-        self.pushButton_2.clicked.connect ( self.jump_to_MainChat )
+        self.pushButton_2.clicked.connect ( self.JoinGroup )
 
     def jump_to_MainChat(self):
         self.dialog.close()
@@ -61,6 +61,8 @@ class Ui_Dialog(object):
         r = requests.post ( url + api, json=data, headers=hed )
         print ( "加入群组" )
         print ( r.json () )
-        group_name = group_name in r.json()
+        group_name = r.json()['group_name']
         print(group_name)
+        gol.set_value('GroupId',group_id)
         gol.set_value ( 'GroupName', group_name )
+        self.jump_to_MainChat()

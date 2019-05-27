@@ -83,10 +83,13 @@ class Ui_Dialog(object):
             self.Dialog.show ()
         else:
             print('error')
+            #registerEM = {'message': '两次输入密码不同，请重试！'}
+            gol.set_value('registerEM','两次输入密码不同，请重试！')
             self.jump_to_RegisterError()
 
     def jump_to_RegisterError(self):
-        self.Dialog.hide()
+
+        self.Dialog.close()
         form1 = QtWidgets.QDialog()
         ui = RegisterError.Ui_Dialog()
         ui.setupUi(form1)
@@ -95,7 +98,7 @@ class Ui_Dialog(object):
         self.Dialog.show()
 
     def Register_User(self):
-        url = gol.get_value('url')
+        url = 'http://www.lunareclipse.net.cn:8000'
         api = '/api/user'
         email = self.lineEdit.text()
         password = self.lineEdit_2.text()
@@ -104,8 +107,15 @@ class Ui_Dialog(object):
                 'avatar': 'https://i.loli.net/2019/05/20/5ce24d067e55d75476.png'}
         r = requests.post ( url + api, json=data )
         print ( r.json () )
+        if 'error'in r.json():
+            registerEM = r.json()
+            message = registerEM['message']
+            gol.set_value('registerEM',message)
+            print ( message )
+            self.jump_to_RegisterError()
 
 if __name__ == "__main__":
+    gol._init ()
     app = QtWidgets.QApplication( sys.argv )
     widget = QtWidgets.QWidget()
     window = Ui_Dialog()

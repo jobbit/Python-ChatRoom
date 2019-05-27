@@ -9,6 +9,7 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 import Register
 import sys
+import gol
 
 class Ui_Dialog(object):
     def setupUi(self, Dialog):
@@ -40,12 +41,14 @@ class Ui_Dialog(object):
         _translate = QtCore.QCoreApplication.translate
         Dialog.setWindowTitle(_translate("Dialog", "Dialog"))
         self.label.setText(_translate("Dialog", "ERROR"))
-        self.label_2.setText(_translate("Dialog", "请确认再次输入密码与第一次输入一致！"))
+        message = gol.get_value('registerEM')
+        print(message)
+        self.label_2.setText(message)
         self.pushButton.setText(_translate("Dialog", "确定"))
         self.pushButton.clicked.connect(self.jump_to_Register)
 
     def jump_to_Register(self):
-        self.Dialog.hide()
+        self.Dialog.close()
         form1 = QtWidgets.QDialog()
         ui = Register.Ui_Dialog()
         ui.setupUi(form1)
