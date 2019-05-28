@@ -67,7 +67,7 @@ class Ui_Dialog(object):
         __sortingEnabled = self.listWidget_2.isSortingEnabled ()
         self.listWidget_2.setSortingEnabled ( False )
         self.listWidget_2.setSortingEnabled ( __sortingEnabled )
-        t = threading.Thread(target=self.ReceiveMessage())
+        t = threading.Thread(target=self.ReceiveMessage)
         t.start()
 
     def jump_to_GroupOperation(self):
@@ -156,18 +156,39 @@ class Ui_Dialog(object):
         r = requests.post ( url + api, json=data, headers=hed )
         print ( "获取指定群聊详细信息" )
         print ( r.json () )
-        content = r.json()
+        content = r.json ()
+        middle = content
         if not 'items' in content == None:
             contentitem = content['items']
-            print('聊天item为',contentitem)
+            print ( '聊天item为', contentitem )
             for line in contentitem:
                 if not line['content'] == None:
-                    ReceiveMC = str(line['sender']['nickname'])+':'+str(line['content'])
-                    print(ReceiveMC)
-                    ReceiveT = str(line['created_at'])
-                    print(ReceiveT)
+                    ReceiveMC = str ( line['sender']['nickname'] ) + ':' + str ( line['content'] )
+                    print ( ReceiveMC )
+                    ReceiveT = str ( line['created_at'] )
+                    print ( ReceiveT )
                     self.listWidget_2.addItem ( ReceiveT )
                     self.listWidget_2.addItem ( ReceiveMC )
+        while True:
+            r1 = requests.post ( url + api, json=data, headers=hed )
+            print ( "获取指定群聊详细信息" )
+            print ( r1.json () )
+            if not r1.json() == middle:
+                content1 = r1.json()
+                middle = r1.json()
+                self.listWidget_2.clear ()
+                if not 'items' in content1 == None:
+                    contentitem = content1['items']
+                    print('聊天item为',contentitem)
+                    for line1 in contentitem:
+                        if not line1['content'] == None:
+                            ReceiveMC = str(line1['sender']['nickname'])+':'+str(line1['content'])
+                            print(ReceiveMC)
+                            ReceiveT = str(line1['created_at'])
+                            print(ReceiveT)
+                            self.listWidget_2.addItem ( ReceiveT )
+                            self.listWidget_2.addItem ( ReceiveMC )
+            time.sleep(5)
 
     def exit(self):
         self.Dialog.close ()
