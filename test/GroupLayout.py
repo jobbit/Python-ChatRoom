@@ -7,7 +7,8 @@
 # WARNING! All changes made in this file will be lost!
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtWidgets import QAbstractItemView
+from PyQt5.QtGui import QIcon
+from PyQt5.QtWidgets import QAbstractItemView, QMenu, QAction
 import GroupOperation
 
 import gol
@@ -17,7 +18,6 @@ import MainChat
 import Login
 
 class Ui_Dialog(object):
-
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
         Dialog.resize(140, 630)
@@ -89,6 +89,9 @@ class Ui_Dialog(object):
                 GroupName = line['group_name']+'_'+str(line['id'])
                 print(GroupName)
                 self.listWidget.addItem(GroupName)
+
+
+
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication( sys.argv )

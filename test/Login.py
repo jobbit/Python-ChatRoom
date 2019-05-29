@@ -16,7 +16,6 @@ import gol
 
 import sys
 import requests
-import json
 
 
 class Ui_Dialog(object):

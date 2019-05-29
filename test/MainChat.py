@@ -16,30 +16,34 @@ import time
 import requests
 import gol
 
+
 class Ui_Dialog(object):
     global token
     def setupUi(self, Dialog):
         Dialog.setObjectName ( "Dialog" )
-        Dialog.resize ( 743, 622 )
+        Dialog.resize ( 629, 574 )
         self.Dialog = Dialog
         self.listWidget = QtWidgets.QListWidget ( Dialog )
-        self.listWidget.setGeometry ( QtCore.QRect ( 60, 40, 111, 361 ) )
+        self.listWidget.setGeometry(QtCore.QRect(20, 60, 111, 361))
         self.listWidget.setObjectName ( "listWidget" )
         self.toolButton = QtWidgets.QToolButton ( Dialog )
-        self.toolButton.setGeometry ( QtCore.QRect ( 60, 400, 111, 131 ) )
+        self.toolButton.setGeometry(QtCore.QRect(20, 480, 111, 71))
         self.toolButton.setObjectName ( "toolButton" )
         self.pushButton = QtWidgets.QPushButton ( Dialog )
-        self.pushButton.setGeometry ( QtCore.QRect ( 540, 400, 111, 131 ) )
+        self.pushButton.setGeometry ( QtCore.QRect ( 500, 420, 111, 131 ) )
         self.pushButton.setObjectName ( "pushButton" )
         self.plainTextEdit = QtWidgets.QPlainTextEdit ( Dialog )
-        self.plainTextEdit.setGeometry ( QtCore.QRect ( 170, 400, 371, 131 ) )
+        self.plainTextEdit.setGeometry ( QtCore.QRect (130, 420, 371, 131) )
         self.plainTextEdit.setObjectName ( "plainTextEdit" )
         self.textBrowser = QtWidgets.QTextBrowser ( Dialog )
-        self.textBrowser.setGeometry ( QtCore.QRect ( 60, 0, 591, 40 ) )
+        self.textBrowser.setGeometry(QtCore.QRect(20, 20, 591, 40))
         self.textBrowser.setObjectName ( "textBrowser" )
         self.listWidget_2 = QtWidgets.QListWidget ( Dialog )
-        self.listWidget_2.setGeometry ( QtCore.QRect ( 170, 40, 481, 361 ) )
+        self.listWidget_2.setGeometry ( QtCore.QRect (130, 60, 481, 361) )
         self.listWidget_2.setObjectName ( "listWidget_2" )
+        self.pushButton_2 = QtWidgets.QPushButton ( Dialog )
+        self.pushButton_2.setGeometry ( QtCore.QRect ( 20, 420, 111, 67 ) )
+        self.pushButton_2.setObjectName ( "pushButton_2" )
 
         self.retranslateUi ( Dialog )
         QtCore.QMetaObject.connectSlotsByName ( Dialog )
@@ -54,6 +58,7 @@ class Ui_Dialog(object):
         self.toolButton.setText(_translate("Dialog", "+"))
         self.toolButton.clicked.connect(self.jump_to_GroupOperation)
         self.pushButton.setText(_translate("Dialog", "send"))
+        self.pushButton_2.setText ( _translate ( "Dialog", "-" ) )
         self.SelfGroupLayout()
         group_name = gol.get_value ( 'GroupName' )
         group_id = gol.get_value('GroupId')
@@ -64,6 +69,7 @@ class Ui_Dialog(object):
 "</style></head><body style=\" font-family:\'SimSun\'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
 "<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">"+group_name+"<br/>"+group_id+"</p></body></html>"))
         self.pushButton.clicked.connect(self.SelfChatSend)
+        self.pushButton_2.clicked.connect(self.QuitChat)
         __sortingEnabled = self.listWidget_2.isSortingEnabled ()
         self.listWidget_2.setSortingEnabled ( False )
         self.listWidget_2.setSortingEnabled ( __sortingEnabled )
@@ -159,7 +165,7 @@ class Ui_Dialog(object):
         content = r.json ()
         middle = content
         if not 'items' in content == None:
-            contentitem = content['items']
+            contentitem = content['items'][::-1]
             print ( '聊天item为', contentitem )
             for line in contentitem:
                 if not line['content'] == None:
@@ -178,7 +184,7 @@ class Ui_Dialog(object):
                 middle = r1.json()
                 self.listWidget_2.clear ()
                 if not 'items' in content1 == None:
-                    contentitem = content1['items']
+                    contentitem = content1['items'][::-1]
                     print('聊天item为',contentitem)
                     for line1 in contentitem:
                         if not line1['content'] == None:
@@ -189,6 +195,22 @@ class Ui_Dialog(object):
                             self.listWidget_2.addItem ( ReceiveT )
                             self.listWidget_2.addItem ( ReceiveMC )
             time.sleep(5)
+
+    def QuitChat(self):
+        # 退出群组
+        global url
+        global hed
+        global group_id
+        global t
+        api = '/api/group/exit'
+        page = 1
+        per_page = 10
+        data = {'group_id': group_id}
+
+        r = requests.post ( url + api, json=data, headers=hed )
+        print ( "退出群组" )
+        print ( r.text )
+        self.jump_to_GroupLayout()
 
     def exit(self):
         self.Dialog.close ()
